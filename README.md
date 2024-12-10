@@ -7,4 +7,5 @@ Repositório com resoluções de problemas do Beecrowd, majoritariamente da cate
 - Manipulação de Strings 
 - Arvore
 - Operações Matemáticas 
+
 Todos os exércicios deste repositório foram feitos em conjunto com meus parceiros André Mendes e Daniel Salgado!
