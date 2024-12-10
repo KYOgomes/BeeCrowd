@@ -1,0 +1,99 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_CITIES 105
+#define MAX_FLIGHTS 105
+#define MAX_NAME_LENGTH 25
+
+typedef struct {
+    char nome[MAX_NAME_LENGTH];
+    int passageiros;
+} Cidade;
+
+typedef struct {
+    char origem[MAX_NAME_LENGTH];
+    char destino[MAX_NAME_LENGTH];
+    int assentos;
+} Voo;
+
+int encontrar_indice_cidade(char nome_cidade[MAX_NAME_LENGTH], Cidade cidades[MAX_CITIES], int num_cidades) {
+    for (int i = 0; i < num_cidades; ++i) {
+        if (strcmp(nome_cidade, cidades[i].nome) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+int main() {
+    int m, n;
+    int cenario = 1;
+    
+    while (scanf("%d", &m) == 1 && m > 0) {
+        Cidade cidades[MAX_CITIES];
+        int num_cidades = 0;
+        
+        // Ler cidades e seus passageiros
+        for (int i = 0; i < m; ++i) {
+            scanf("%s %d", cidades[num_cidades].nome, &cidades[num_cidades].passageiros);
+            num_cidades++;
+        }
+        
+        char cidade_evento[MAX_NAME_LENGTH];
+        scanf("%d %s", &n, cidade_evento);
+        
+        Voo voos[MAX_FLIGHTS];
+        
+        // Ler voos
+        for (int i = 0; i < n; ++i) {
+            scanf("%s %s %d", voos[i].origem, voos[i].destino, &voos[i].assentos);
+        }
+        
+        // Determinar se o cenário é viável
+        int viavel = 0;
+        int indice_cidade_evento = encontrar_indice_cidade(cidade_evento, cidades, num_cidades);
+        
+        if (indice_cidade_evento != -1) {
+            // Verificar se há um caminho válido de qualquer cidade até cidade_evento
+            int visitado[MAX_CITIES] = {0};
+            visitado[indice_cidade_evento] = 1;
+            
+            int pilha[MAX_CITIES];
+            int topo = 0;
+            pilha[topo++] = indice_cidade_evento;
+            
+            while (topo > 0) {
+                int indice_cidade_atual = pilha[--topo];
+                
+                for (int i = 0; i < n; ++i) {
+                    if (strcmp(voos[i].origem, cidades[indice_cidade_atual].nome) == 0) {
+                        int indice_destino = encontrar_indice_cidade(voos[i].destino, cidades, num_cidades);
+                        if (!visitado[indice_destino]) {
+                            visitado[indice_destino] = 1;
+                            pilha[topo++] = indice_destino;
+                        }
+                    }
+                }
+            }
+            
+            viavel = 1;
+            for (int i = 0; i < num_cidades; ++i) {
+                if (!visitado[i] && cidades[i].passageiros > 0) {
+                    viavel = 0;
+                    break;
+                }
+            }
+        }
+        
+        // Imprimir o resultado do cenário
+        printf("Instancia %d\n", cenario++);
+        if (viavel) {
+            printf("viavel\n\n");
+        } else {
+            printf("inviavel\n\n");
+        }
+    }
+    
+    return 0;
+}
